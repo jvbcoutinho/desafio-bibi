@@ -7,7 +7,7 @@ namespace Bibi.Application.ArquivoAggregate
 {
     public interface IArquivoService
     {
-        Task<ArquivoOuputDto> AnalisarArquivo(string fileString, string fileName);
+        Task<ArquivoOuputDto> AdicionarArquivo(string fileString, string fileName);
         Task<IEnumerable<ArquivoOuputDto>> ObterTodasAnalises();
         Task<ArquivoOuputDto> ObterAnalise(string resourceId);
     }

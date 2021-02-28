@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -23,7 +24,7 @@ namespace Bibi.Application.ArquivoAggregate
             _httpClient = new HttpClient();
         }
 
-        public async Task<ArquivoOuputDto> AnalisarArquivo(string fileString, string fileName)
+        public async Task<ArquivoOuputDto> AdicionarArquivo(string fileString, string fileName)
         {
             var formContent = new FormUrlEncodedContent(new[]
             {
@@ -44,9 +45,20 @@ namespace Bibi.Application.ArquivoAggregate
 
         public async Task<IEnumerable<ArquivoOuputDto>> ObterTodasAnalises()
         {
-            var result = await _arquivoRepository.ObterTodos();
+            var analises = await _arquivoRepository.ObterTodos();
 
-            return _mapper.Map<IEnumerable<ArquivoOuputDto>>(result);
+            await AtualizarAnalisesPendentes(analises);
+
+            return _mapper.Map<IEnumerable<ArquivoOuputDto>>(analises);
+        }
+
+        private async Task AtualizarAnalisesPendentes(IEnumerable<Arquivo> analises)
+        {
+            foreach (var analise in analises)
+            {
+                if (analise.Status == EStatus.ANALISE)
+                    await ObterAnalise(analise.ResourceId);
+            }
         }
 
         public async Task<ArquivoOuputDto> ObterAnalise(string resourceId)

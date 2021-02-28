@@ -32,7 +32,7 @@ namespace Bibi.Api.Controllers
                 string s = Convert.ToBase64String(fileBytes);
 
                 var stringFile = $"data:{myFile.ContentType};name={myFile.FileName};base64,{s}";
-                var result = await arquivoService.AnalisarArquivo(stringFile, myFile.FileName);
+                var result = await arquivoService.AdicionarArquivo(stringFile, myFile.FileName);
 
                 return Created(string.Empty, result);
             }
