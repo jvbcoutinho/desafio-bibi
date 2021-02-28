@@ -9,5 +9,6 @@ namespace Bibi.Application.ArquivoAggregate
     {
         Task<ArquivoOuputDto> AnalisarArquivo(string fileString, string fileName);
         Task<IEnumerable<ArquivoOuputDto>> ObterTodasAnalises();
+        Task<ArquivoOuputDto> ObterAnalise(string resourceId);
     }
 }

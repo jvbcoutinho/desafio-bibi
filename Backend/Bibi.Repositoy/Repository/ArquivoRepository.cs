@@ -39,5 +39,12 @@ namespace Bibi.Repositoy.Repository
         {
             return await this._context.Arquivo.ToListAsync();
         }
+
+        public async Task Atualizar(Arquivo arquivo)
+        {
+            _context.Entry(arquivo).State = EntityState.Modified;
+            await this._context.SaveChangesAsync();
+        }
+
     }
 }

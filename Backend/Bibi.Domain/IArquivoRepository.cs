@@ -9,5 +9,6 @@ namespace Bibi.Domain
         Task Deletar(Arquivo arquivo);
         Task<Arquivo> ObterPorResourceId(string id);
         Task<IEnumerable<Arquivo>> ObterTodos();
+        Task Atualizar(Arquivo arquivo);
     }
 }

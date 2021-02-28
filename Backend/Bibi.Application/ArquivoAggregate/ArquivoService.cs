@@ -48,5 +48,29 @@ namespace Bibi.Application.ArquivoAggregate
 
             return _mapper.Map<IEnumerable<ArquivoOuputDto>>(result);
         }
+
+        public async Task<ArquivoOuputDto> ObterAnalise(string resourceId)
+        {
+            var url = $"{VirusTotalConfig.ReportUrl}?apikey={VirusTotalConfig.ApiKey}&resource={resourceId}";
+            var response = await _httpClient.GetAsync(url);
+            var contents = await response.Content.ReadAsStringAsync();
+            var arquivo = await _arquivoRepository.ObterPorResourceId(resourceId);
+
+            if (!contents.Contains("positives"))
+                return _mapper.Map<ArquivoOuputDto>(arquivo);
+
+            var reportResponse = JsonConvert.DeserializeObject<ReportResponse>(contents);
+
+            if (reportResponse.Positives == 0)
+                arquivo.Status = EStatus.SEGURO;
+            else if (reportResponse.Positives > 0)
+                arquivo.Status = EStatus.INSEGURO;
+            else
+                return _mapper.Map<ArquivoOuputDto>(arquivo);
+
+            await _arquivoRepository.Atualizar(arquivo);
+            return _mapper.Map<ArquivoOuputDto>(arquivo);
+
+        }
     }
 }

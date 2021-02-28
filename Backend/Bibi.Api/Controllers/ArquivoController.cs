@@ -39,6 +39,17 @@ namespace Bibi.Api.Controllers
 
         }
 
+        [HttpGet("report/{resourceId}")]
+        public async Task<IActionResult> GetReport(
+            string resourceId,
+            [FromServices] IArquivoService arquivoService
+        )
+        {
+            var result = await arquivoService.ObterAnalise(resourceId);
+
+            return Ok(result);
+        }
+
 
         [HttpGet("")]
         public async Task<IActionResult> GetAll(
@@ -49,5 +60,7 @@ namespace Bibi.Api.Controllers
 
             return Ok(result);
         }
+
+
     }
 }
