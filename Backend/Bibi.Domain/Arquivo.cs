@@ -1,18 +1,19 @@
+using System;
+
 namespace Bibi.Domain
 {
     public class Arquivo
     {
-        public Arquivo(string id, string nome, string conteudo, string status)
+        public Arquivo(string resourceId, string nome, EStatus status)
         {
-            this.Id = id;
+            this.ResourceId = resourceId;
             this.Nome = nome;
-            this.Conteudo = conteudo;
             this.Status = status;
-
+            Id = Guid.NewGuid();
         }
-        public string Id { get; set; }
+        public Guid Id { get; set; }
+        public string ResourceId { get; set; }
         public string Nome { get; set; }
-        public string Conteudo { get; set; }
-        public string Status { get; set; }
+        public EStatus Status { get; set; }
     }
 }
