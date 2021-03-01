@@ -13,7 +13,7 @@ namespace Bibi.Repository
         {
             services.AddDbContext<BibiContext>(opt =>
             {
-                opt.UseInMemoryDatabase(connectionString);
+                opt.UseSqlServer(connectionString);
             });
 
             services.AddTransient<IArquivoRepository, ArquivoRepository>();

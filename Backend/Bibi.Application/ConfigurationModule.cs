@@ -14,7 +14,7 @@ namespace Bibi.Application
             services.AddScoped<IArquivoService, ArquivoService>();
             services.AddSingleton<IVerificadorFacade, VirusTotalService>();
 
-            services.RegisterRepository("Conexao");
+            services.RegisterRepository(configuration.GetConnectionString("connectionString"));
         }
 
     }
