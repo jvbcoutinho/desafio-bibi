@@ -1,0 +1,41 @@
+<!-- <div class="container">
+  <div class="row">
+    <div class="col-12 my-4">
+      <div class="form-group">
+        <input type="file" id="file" (change)="handleFileInput($event.target)">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 my-4">
+      <button mat-raised-button (click)="uploadFile()" color="primary">Enviar</button>
+    </div>
+  </div>
+</div> -->
+<div class="container">
+  <div class="row">
+    <div class="col-12 my-4">
+      <div class="pdf-height">
+        <button class="pdf-button" type="button" color="primary" mat-raised-button expand="full"
+          (click)="pdfInput.click()" aria-label="anexar arquivo">
+          Selecionar Arquivo
+          <mat-icon>attach_file</mat-icon>
+          <input hidden (change)="handleFileInput($event.target)" #pdfInput type="file" id="file">
+        </button>
+      </div>
+    </div>
+    <div>
+      <mat-list>
+        <mat-list-item class="pdf-name-height">
+          <mat-icon mat-list-icon *ngIf="file.size != 0">file_present</mat-icon>
+          <div class="pdfName" matTooltip={{file.name}} mat-line *ngIf="file.size != 0"> {{file.name}} </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 my-4">
+      <button [disabled]="file.size == 0" mat-raised-button (click)="uploadFile()" color="accent">Enviar</button>
+    </div>
+  </div>
+</div>

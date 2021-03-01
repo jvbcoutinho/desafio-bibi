@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12 my-4">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-icon class="clickable" (click)="atualizarStatus()">
+              refresh
+            </mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let arq">
+            <mat-icon color="primary" *ngIf="arq.status == 'SEGURO'" style="font-size: 20px;">
+              verified
+            </mat-icon>
+            <mat-icon color="warn" *ngIf="arq.status == 'INSEGURO'" style="font-size: 20px;">
+              warning
+            </mat-icon>
+            <mat-icon *ngIf="arq.status == 'ANALISE'" style="font-size: 20px;">
+              timer
+            </mat-icon>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef> Nome </th>
+          <td mat-cell *matCellDef="let arq">
+            {{ arq.nome }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let arq">
+            <mat-icon color="warn" class="clickable" style="margin-left: 11px;" (click)="excluir(arq)">
+              delete
+            </mat-icon>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+</div>

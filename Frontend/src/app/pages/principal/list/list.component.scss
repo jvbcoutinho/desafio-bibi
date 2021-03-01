@@ -1,0 +1,23 @@
+.mat-column-status {
+  width: 70px !important;
+}
+
+.mat-column-delete {
+  width: 70px !important;
+}
+
+.mat-column-nome {
+  width: 400px !important;
+}
+
+th, td {
+  overflow: hidden;
+  width:auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
