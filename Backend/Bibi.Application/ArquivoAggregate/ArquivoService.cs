@@ -1,12 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Bibi.Application.ArquivoAggregate.Dto;
-using Bibi.Application.VirusTotal;
+using Bibi.Application.VerificadorAntiCorruption;
 using Bibi.Domain;
-using Newtonsoft.Json;
 
 namespace Bibi.Application.ArquivoAggregate
 {
@@ -15,28 +13,22 @@ namespace Bibi.Application.ArquivoAggregate
 
         private readonly IArquivoRepository _arquivoRepository;
         private readonly IMapper _mapper;
+        private readonly IVerificadorFacade _verificador;
         private readonly HttpClient _httpClient;
 
-        public ArquivoService(IArquivoRepository arquivoRepository, IMapper mapper)
+        public ArquivoService(IArquivoRepository arquivoRepository, IMapper mapper, IVerificadorFacade verificador)
         {
             _arquivoRepository = arquivoRepository;
             _mapper = mapper;
             _httpClient = new HttpClient();
+            _verificador = verificador;
         }
 
         public async Task<ArquivoOuputDto> AdicionarArquivo(string fileString, string fileName)
         {
-            var formContent = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("apikey", VirusTotalConfig.ApiKey),
-                new KeyValuePair<string, string>("file", fileString)
-            });
+            var uploadResponse = await _verificador.UploadArquivo(fileString);
 
-            var response = await _httpClient.PostAsync(VirusTotalConfig.ScanUrl, formContent);
-            var contents = await response.Content.ReadAsStringAsync();
-            var scanResponse = JsonConvert.DeserializeObject<ScanResponse>(contents);
-
-            var arquivo = new Arquivo(scanResponse.Resource, fileName, EStatus.ANALISE);
+            var arquivo = new Arquivo(uploadResponse.ResourceId, fileName, EStatus.ANALISE);
 
             await _arquivoRepository.Criar(arquivo);
 
@@ -45,44 +37,46 @@ namespace Bibi.Application.ArquivoAggregate
 
         public async Task<IEnumerable<ArquivoOuputDto>> ObterTodasAnalises()
         {
-            var analises = await _arquivoRepository.ObterTodos();
+            var arquivos = await _arquivoRepository.ObterTodos();
 
-            await AtualizarAnalisesPendentes(analises);
+            await AtualizarAnalisesPendentes(arquivos);
 
-            return _mapper.Map<IEnumerable<ArquivoOuputDto>>(analises);
+            return _mapper.Map<IEnumerable<ArquivoOuputDto>>(arquivos);
         }
 
-        private async Task AtualizarAnalisesPendentes(IEnumerable<Arquivo> analises)
+        private async Task AtualizarAnalisesPendentes(IEnumerable<Arquivo> arquivos)
         {
-            foreach (var analise in analises)
+            foreach (var arquivo in arquivos)
             {
-                if (analise.Status == EStatus.ANALISE)
-                    await ObterAnalise(analise.ResourceId);
+                if (arquivo.Status == EStatus.ANALISE)
+                    await AtualizarStatus(arquivo);
             }
         }
 
         public async Task<ArquivoOuputDto> ObterAnalise(string resourceId)
         {
-            var url = $"{VirusTotalConfig.ReportUrl}?apikey={VirusTotalConfig.ApiKey}&resource={resourceId}";
-            var response = await _httpClient.GetAsync(url);
-            var contents = await response.Content.ReadAsStringAsync();
             var arquivo = await _arquivoRepository.ObterPorResourceId(resourceId);
 
-            if (!contents.Contains("positives"))
-                return _mapper.Map<ArquivoOuputDto>(arquivo);
+            var result = await AtualizarStatus(arquivo);
 
-            var reportResponse = JsonConvert.DeserializeObject<ReportResponse>(contents);
+            return _mapper.Map<ArquivoOuputDto>(result);
+        }
+
+        private async Task<Arquivo> AtualizarStatus(Arquivo arquivo)
+        {
+            var reportResponse = await _verificador.ObterRelatorio(arquivo.ResourceId);
+
+            if (reportResponse.Response_code == -2)
+                return arquivo;
 
             if (reportResponse.Positives == 0)
                 arquivo.Status = EStatus.SEGURO;
             else if (reportResponse.Positives > 0)
                 arquivo.Status = EStatus.INSEGURO;
-            else
-                return _mapper.Map<ArquivoOuputDto>(arquivo);
 
             await _arquivoRepository.Atualizar(arquivo);
-            return _mapper.Map<ArquivoOuputDto>(arquivo);
 
+            return arquivo;
         }
     }
 }
