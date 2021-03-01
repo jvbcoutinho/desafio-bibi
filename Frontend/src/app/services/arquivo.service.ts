@@ -28,7 +28,6 @@ export class ArquivoService {
       .pipe(
         tap(resp => {
           this.$arquivos.next([...this.$arquivos.value, resp]);
-          debugger;
         })
       )
   }
@@ -38,7 +37,6 @@ export class ArquivoService {
     return this.httpClient.get<Arquivo[]>(endpoint).pipe(
       tap(resp => {
         this.$arquivos.next(resp);
-        debugger;
       })
     )
   }
