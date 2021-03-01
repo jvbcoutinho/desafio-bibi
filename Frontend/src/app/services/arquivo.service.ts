@@ -42,7 +42,7 @@ export class ArquivoService {
   }
 
   excluir(id: string) {
-    const endpoint = `https://localhost:5001/Arquivo/` + id;
+    const endpoint = this.baseUrl + `/Arquivo/` + id;
     return this.httpClient.delete(endpoint).pipe(
       tap(() => {
         this.$arquivos.next(this.$arquivos.value.filter(x => x.resourceId != id));
