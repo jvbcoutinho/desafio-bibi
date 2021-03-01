@@ -39,7 +39,7 @@ namespace Bibi.Api.Controllers
 
         }
 
-        [HttpGet("report/{resourceId}")]
+        [HttpGet("{resourceId}")]
         public async Task<IActionResult> GetReport(
             string resourceId,
             [FromServices] IArquivoService arquivoService
@@ -60,6 +60,18 @@ namespace Bibi.Api.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{resourceId}")]
+        public async Task<IActionResult> Delete(
+            string resourceId,
+            [FromServices] IArquivoService arquivoService
+        )
+        {
+            await arquivoService.Delete(resourceId);
+
+            return Ok();
+        }
+
 
 
     }

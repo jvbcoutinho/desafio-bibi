@@ -78,5 +78,12 @@ namespace Bibi.Application.ArquivoAggregate
 
             return arquivo;
         }
+
+        public async Task Delete(string resourceId)
+        {
+            var arquivo = await _arquivoRepository.ObterPorResourceId(resourceId);
+
+            await _arquivoRepository.Deletar(arquivo);
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace Bibi.Application.ArquivoAggregate
         Task<ArquivoOuputDto> AdicionarArquivo(string fileString, string fileName);
         Task<IEnumerable<ArquivoOuputDto>> ObterTodasAnalises();
         Task<ArquivoOuputDto> ObterAnalise(string resourceId);
+        Task Delete(string resourceId);
     }
 }
